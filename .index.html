@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مشاركة الموقع</title>
+</head>
+<body style="text-align:center;font-family:Arial;padding:50px">
+<h2>مشاركة موقعي</h2>
+<p>اضغط بالأسفل لو موافق تشارك موقعك.</p>
+<button onclick="shareLocation()" style="padding:15px 35px;font-size:20px">
+ابعت
+</button>
+<p id="status"></p>
+
+<script>
+function shareLocation() {
+  const status = document.getElementById('status');
+
+  if (!navigator.geolocation) {
+    status.textContent = 'المتصفح لا يدعم تحديد الموقع';
+    return;
+  }
+
+  status.textContent = 'في انتظار موافقتك...';
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    const link = `https://www.google.com/maps?q=${lat},${lon}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'موقعي',
+          text: 'ده موقعي:',
+          url: link
+        });
+      } else {
+        await navigator.clipboard.writeText(link);
+        status.textContent = 'تم نسخ رابط موقعك، ابعته للشخص بنفسك.';
+      }
+    } catch (e) {
+      status.textContent = 'تقدر تنسخ الرابط وتبعته بنفسك.';
+    }
+  }, () => {
+    status.textContent = 'لم تتم مشاركة الموقع. تأكد من السماح بإذن الموقع.';
+  });
+}
+</script>
+</body>
+</html>
